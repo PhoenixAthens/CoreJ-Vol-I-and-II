@@ -28,3 +28,27 @@ Guess what the output looks like
 ```
 
 As the Byte variable overflows when asked to store a value outside its range of -128 to 127, in situations where negative values are neither required nor necessary `.toUnsignedInt()` provides an easy way to store values between 0-255 within an 8-bit container (data-type), i.e., `byte`.
+
+----
+**Context:[`SwitchAndMore.java`](https://github.com/PhoenixAthens/Atari-6507-Development/blob/main/cleanMem/cleanMem.asm)**<br>
+Q1: In the following code snippet
+```java
+greeting = "𐀀Hello";
+System.out.println(greeting.length()); // 7
+System.out.println(greeting.codePointCount(0, greeting.length()));// 6
+```
+why does the `.codePointCount()` method return the value `6` rather than `7`?
+
+A: The reason why `greeting.codePointCount(0, greeting.length())` returns `6` instead of `7` is because the string `"𐀀Hello"` contains a surrogate character.
+
+In Unicode, some characters are represented using a pair of code units called "surrogate pairs." These surrogate pairs are used to represent characters that cannot be represented by a single 16-bit code unit in the Basic Multilingual plane (BMP) of Unicode.
+
+The character `𐀀` (U+10000) is a supplementary character that requires a surrogate pair to be represented in UTF-16 encoding, which is the default encoding used by Java Strings.
+
+When you call `greeting.length()`, it returns `7` because it counts the number of 16-bit code units (chars) in the string, including the two code units that make up the surrogate pair for `𐀀`.
+
+However, when you call `greeting.codePointCount(0, greeting.length())`, it counts the number of Unicode code points in the specified text range. A code point is a single Unicode character value, which may be represented by one or two 16-bit code units (chars) in UTF-16 encoding.
+
+Since, the string `"𐀀Hello"` contains one supplementary character `"𐀀"` represented by a surrogate pair `"𐀀"`, and five characters from the Basic Multilingual Plane (`H`,`E`,`L`,`L`,`O`), the `codePointCount` method returns `6`, which is the correct count of Unicode code points in the string.
+
+In summary, `length()` counts the number of 16-bit code units (chars), while `codePointCount()` counts the number of Unicode code points, taking into account surrogate pairs for supplementary characters.
